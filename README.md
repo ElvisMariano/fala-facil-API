@@ -2,32 +2,22 @@
 
 API REST para o aplicativo Fala Fácil, uma plataforma de aprendizado de idiomas baseada em flashcards.
 
-## Funcionalidades
-
-- Gerenciamento de decks de flashcards
-- Sistema de progresso de estudo
-- Sistema de conquistas
-- Recomendação personalizada de decks
-- Exportação e importação de decks
-- Cache para otimização de performance
-- Documentação completa da API
-
 ## Tecnologias
 
-- Python 3.11
-- Django 5.0
-- Django REST Framework
-- PostgreSQL
-- Redis
-- Docker
-- AWS S3 (armazenamento de mídia)
+- Python 3.11+
+- Django 5.0+
+- Django REST Framework 3.14+
+- PostgreSQL (produção) / SQLite (desenvolvimento)
+- Poetry (gerenciamento de dependências)
+- JWT (autenticação)
+- Swagger/OpenAPI (documentação)
+- Black, isort, flake8 (formatação e linting)
+- Pytest (testes)
 
 ## Requisitos
 
 - Python 3.11+
 - Poetry
-- PostgreSQL
-- Redis
 
 ## Instalação
 
@@ -39,109 +29,90 @@ cd fala-facil-api
 
 2. Instale as dependências:
 ```bash
-poetry install
+make install
 ```
 
 3. Configure as variáveis de ambiente:
 ```bash
 cp .env.example .env
-# Edite o arquivo .env com suas configurações
 ```
+Edite o arquivo `.env` com suas configurações.
 
 4. Execute as migrações:
 ```bash
-poetry run python src/manage.py migrate
+cd src
+poetry run python manage.py migrate
 ```
 
-5. Inicie o servidor:
+5. Crie um superusuário (opcional):
 ```bash
-poetry run python src/manage.py runserver
+poetry run python manage.py createsuperuser
+```
+
+## Desenvolvimento
+
+- Executar o servidor de desenvolvimento:
+```bash
+cd src
+poetry run python manage.py runserver
+```
+
+- Formatar o código:
+```bash
+make format
+```
+
+- Executar o linter:
+```bash
+make lint
+```
+
+- Executar os testes:
+```bash
+make test
+```
+
+- Gerar relatório de cobertura:
+```bash
+make coverage
 ```
 
 ## Documentação da API
 
-A documentação da API está disponível em três formatos:
+A documentação da API está disponível em:
 
-- Swagger UI: `/api/docs/`
-- ReDoc: `/api/redoc/`
-- OpenAPI Schema: `/api/schema/`
+- Swagger UI: http://localhost:8000/api/docs/
+- ReDoc: http://localhost:8000/api/redoc/
 
-## Endpoints Principais
-
-### Decks
-
-- `GET /api/decks/`: Lista todos os decks públicos
-- `GET /api/decks/my-decks/`: Lista decks do usuário
-- `GET /api/decks/recommendations/`: Recomendações personalizadas
-- `GET /api/decks/{id}/`: Detalhes de um deck
-- `POST /api/decks/`: Cria um novo deck
-- `PUT /api/decks/{id}/`: Atualiza um deck
-- `DELETE /api/decks/{id}/`: Remove um deck
-- `POST /api/decks/{id}/duplicate/`: Duplica um deck
-- `POST /api/decks/{id}/archive/`: Arquiva um deck
-- `POST /api/decks/{id}/unarchive/`: Desarquiva um deck
-- `GET /api/decks/{id}/export/`: Exporta um deck (JSON/CSV)
-- `POST /api/decks/import/`: Importa um deck (JSON/CSV)
-
-### Flashcards
-
-- `GET /api/cards/`: Lista todos os flashcards
-- `GET /api/cards/my-flashcards/`: Lista flashcards do usuário
-- `GET /api/cards/{id}/`: Detalhes de um flashcard
-- `POST /api/cards/`: Cria um novo flashcard
-- `PUT /api/cards/{id}/`: Atualiza um flashcard
-- `DELETE /api/cards/{id}/`: Remove um flashcard
-- `POST /api/cards/{id}/review/`: Registra uma revisão
-
-### Favoritos
-
-- `GET /api/favorites/`: Lista decks favoritos
-- `POST /api/favorites/`: Adiciona um deck aos favoritos
-- `DELETE /api/favorites/{id}/`: Remove um deck dos favoritos
-
-## Cache
-
-O sistema utiliza Redis para cache dos seguintes dados:
-
-- Listagem de decks públicos
-- Decks do usuário
-- Recomendações
-- Detalhes do deck
-- Favoritos do usuário
-
-## Desenvolvimento
-
-### Comandos úteis
-
-```bash
-# Formata o código
-make format
-
-# Executa os linters
-make lint
-
-# Executa os testes
-make test
-
-# Gera relatório de cobertura
-make coverage
-
-# Limpa arquivos gerados
-make clean
-```
-
-### Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
-src/
-├── apps/
-│   ├── achievements/    # App de conquistas
-│   ├── flashcards/     # App principal de flashcards
-│   ├── progress/       # App de progresso
-│   └── users/          # App de usuários
-├── config/             # Configurações do projeto
-└── manage.py
+fala-facil-api/
+├── src/
+│   ├── apps/
+│   │   ├── achievements/    # App de conquistas
+│   │   ├── flashcards/     # App de flashcards
+│   │   ├── progress/       # App de progresso
+│   │   └── users/          # App de usuários
+│   ├── config/             # Configurações do projeto
+│   └── manage.py
+├── tests/                  # Testes
+├── .env.example           # Exemplo de variáveis de ambiente
+├── .gitignore
+├── LICENSE                # Licença MIT
+├── Makefile              # Comandos úteis
+├── README.md             # Este arquivo
+├── pyproject.toml        # Configuração do Poetry
+└── setup.cfg             # Configuração das ferramentas
 ```
+
+## Contribuindo
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Faça commit das suas alterações (`git commit -am 'Adiciona nova feature'`)
+4. Faça push para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
 
 ## Licença
 
