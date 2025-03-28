@@ -8,6 +8,10 @@ from django.utils.translation import gettext_lazy as _
 class User(AbstractUser):
     """Custom user model."""
 
+    # Campos padrão do AbstractUser:
+    # username, first_name, last_name, email, is_staff, is_active, date_joined
+
+    # Campos personalizados
     email = models.EmailField(
         _('endereço de e-mail'),
         unique=True,
@@ -24,6 +28,7 @@ class User(AbstractUser):
     bio = models.TextField(
         _('biografia'),
         blank=True,
+        default='',
     )
     language = models.CharField(
         _('idioma'),
@@ -61,7 +66,6 @@ class User(AbstractUser):
 
     class Meta:
         """Meta options."""
-
         verbose_name = _('usuário')
         verbose_name_plural = _('usuários')
         ordering = ['-date_joined']

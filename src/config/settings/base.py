@@ -34,7 +34,8 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'corsheaders',
     'django_filters',
-    'drf_yasg',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
 ]
 
 LOCAL_APPS = [
@@ -129,9 +130,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+WHITENOISE_USE_FINDERS = True
 
 # Media files
 MEDIA_URL = "media/"
@@ -147,19 +149,13 @@ AUTH_USER_MODEL = 'users.User'
 
 # REST Framework
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.authentication.SessionAuthentication',
     ],
-    'DEFAULT_PARSER_CLASSES': [
-        'rest_framework.parsers.JSONParser',
-        'rest_framework.parsers.FormParser',
-        'rest_framework.parsers.MultiPartParser',
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -168,6 +164,26 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
+    'DEFAULT_VERSION': 'v1',
+    'ALLOWED_VERSIONS': ['v1'],
+    'VERSION_PARAM': 'version',
+    'DEFAULT_THROTTLE_CLASSES': [],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '1000/day',
+    },
+    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    'TEST_REQUEST_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.MultiPartRenderer',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    'JSON_ENCODER': 'core.utils.CustomJSONEncoder'
 }
 
 # CORS
@@ -205,55 +221,86 @@ LOGGING = {
             "style": "{",
         },
     },
-    "filters": {
-        "require_debug_true": {
-            "()": "django.utils.log.RequireDebugTrue",
-        },
-        "require_debug_false": {
-            "()": "django.utils.log.RequireDebugFalse",
-        },
-    },
     "handlers": {
         "console": {
-            "level": "INFO",
-            "filters": ["require_debug_true"],
+            "level": "DEBUG",
             "class": "logging.StreamHandler",
-            "formatter": "simple",
-        },
-        "file": {
-            "level": "INFO",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": BASE_DIR / "logs/fala_facil.log",
-            "maxBytes": 1024 * 1024 * 5,  # 5 MB
-            "backupCount": 5,
             "formatter": "verbose",
-        },
-        "mail_admins": {
-            "level": "ERROR",
-            "filters": ["require_debug_false"],
-            "class": "django.utils.log.AdminEmailHandler",
         },
     },
     "loggers": {
         "django": {
-            "handlers": ["console", "file"],
+            "handlers": ["console"],
             "level": "INFO",
             "propagate": True,
         },
         "django.request": {
-            "handlers": ["mail_admins", "file"],
+            "handlers": ["console"],
             "level": "ERROR",
             "propagate": False,
         },
         "django.security": {
-            "handlers": ["mail_admins", "file"],
+            "handlers": ["console"],
             "level": "ERROR",
             "propagate": False,
         },
-        "apps": {
-            "handlers": ["console", "file"],
-            "level": "INFO",
-            "propagate": True,
+        "drf_spectacular": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
         },
     },
+}
+
+# API Documentation
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Fala Fácil API',
+    'DESCRIPTION': 'API REST para o aplicativo Fala Fácil, uma plataforma de aprendizado de idiomas baseada em flashcards',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': True,
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,
+        'displayOperationId': True,
+        'filter': True,
+    },
+    'SECURITY': [
+        {
+            'Bearer': {
+                'type': 'apiKey',
+                'name': 'Authorization',
+                'in': 'header',
+                'description': 'Enter your bearer token in the format: Bearer <token>'
+            }
+        }
+    ],
+    'SERVE_PERMISSIONS': ['rest_framework.permissions.AllowAny'],
+    'SCHEMA_PATH_PREFIX': '/api/v1',
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SORT_OPERATIONS': False,
+    'ENUM_NAME_OVERRIDES': {
+        'LanguageEnum': 'apps.flashcards.models.LANGUAGE_CHOICES',
+        'CurrentLevelEnum': 'apps.users.models.User.level.field.choices',
+        'Language927Enum': 'apps.flashcards.models.LANGUAGE_CHOICES',
+        'Language9dcEnum': 'apps.flashcards.models.LANGUAGE_CHOICES',
+    },
+    'TAGS': [
+        {'name': 'auth', 'description': 'Autenticação e autorização'},
+        {'name': 'users', 'description': 'Gerenciamento de usuários'},
+        {'name': 'decks', 'description': 'Gerenciamento de decks de flashcards'},
+        {'name': 'flashcards', 'description': 'Gerenciamento de flashcards'},
+        {'name': 'progress', 'description': 'Acompanhamento de progresso'},
+        {'name': 'achievements', 'description': 'Sistema de conquistas'},
+        {'name': 'favorites', 'description': 'Gerenciamento de decks favoritos'},
+    ],
+    'SERVE_AUTHENTICATION': None,
+    'SWAGGER_UI_DIST': 'SIDECAR',
+    'SWAGGER_UI_FAVICON_HREF': None,
+    'REDOC_DIST': 'SIDECAR',
+    'SERVE_PUBLIC': True,
+    'SERVE_URLCONF': None,
+    'REDOC_UI_SETTINGS': {
+        'hideDownloadButton': False,
+        'hideHostname': False,
+    }
 } 

@@ -17,6 +17,19 @@ SECRET_KEY = os.getenv(
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
 
+# Database
+# ------------------------------------------------------------------------------
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'falafacil_db',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
 # Email backend for development
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -44,6 +57,6 @@ SECURE_HSTS_PRELOAD = False
 
 # Logging
 LOGGING["handlers"]["console"]["filters"] = []  # noqa F405
-LOGGING["handlers"]["file"]["level"] = "DEBUG"  # noqa F405
+LOGGING["handlers"]["console"]["level"] = "INFO"  # noqa F405
 for logger in LOGGING["loggers"].values():  # noqa F405
-    logger["level"] = "DEBUG" 
+    logger["level"] = "INFO" 

@@ -50,8 +50,8 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-    'drf_yasg',
     'debug_toolbar',
+    'drf_spectacular',
 ]
 
 LOCAL_APPS = [
@@ -108,9 +108,22 @@ DATABASES = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': os.environ.get('REDIS_URL', 'redis://localhost:6379/0'),
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
     }
 }
+
+# Cache time to live is 15 minutes
+CACHE_TTL = 60 * 15
+
+# Cache keys
+CACHE_KEY_FEATURED_DECKS = 'featured_decks'
+CACHE_KEY_PUBLIC_DECKS = 'public_decks'
+CACHE_KEY_DECK_DETAIL = 'deck_detail_{}'
+CACHE_KEY_USER_DECKS = 'user_decks_{}'
+CACHE_KEY_USER_FAVORITES = 'user_favorites_{}'
 
 
 # Password validation
@@ -165,12 +178,14 @@ AUTH_USER_MODEL = 'users.User'
 
 # REST Framework
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ),
+    ],
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
     ],
@@ -235,3 +250,30 @@ if env('AWS_ACCESS_KEY_ID', default=None):
     AWS_S3_VERIFY = True
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
+
+# Drf Spectacular
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Fala Fácil API',
+    'DESCRIPTION': 'API REST para o aplicativo Fala Fácil, uma plataforma de aprendizado de idiomas baseada em flashcards',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SCHEMA_PATH_PREFIX': '/api/',
+    'CONTACT': {
+        'name': 'Elvis Mariano',
+        'email': 'admelvismariano@gmail.com',
+    },
+    'LICENSE': {
+        'name': 'MIT',
+        'url': 'https://opensource.org/licenses/MIT',
+    },
+    'TAGS': [
+        {'name': 'decks', 'description': 'Operações com decks de flashcards'},
+        {'name': 'flashcards', 'description': 'Operações com flashcards'},
+        {'name': 'favorites', 'description': 'Operações com decks favoritos'},
+        {'name': 'progress', 'description': 'Operações com progresso de estudo'},
+    ],
+}
+
+# Import logging settings
+from .settings.logging import LOGGING

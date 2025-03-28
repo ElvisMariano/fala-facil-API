@@ -5,36 +5,36 @@ description = "API REST para o aplicativo Fala Fácil, uma plataforma de aprendi
 authors = ["Elvis Mariano <admelvismariano@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-django = "^5.1.7"
+django = "^5.0.1"
 djangorestframework = "^3.14.0"
+django-filter = "^23.5"
 django-cors-headers = "^4.3.1"
-psycopg2-binary = "^2.9.9"
-python-dotenv = "^1.0.1"
-pyjwt = "^2.8.0"
-python-jose = {extras = ["cryptography"], version = "^3.3.0"}
-redis = "^5.0.1"
-gunicorn = "^21.2.0"
-whitenoise = "^6.6.0"
-dj-database-url = "^2.1.0"
-drf-yasg = "^1.21.7"
-django-filter = "^24.1"
-djangorestframework-simplejwt = "^5.3.1"
+django-environ = "^0.11.2"
+django-storages = "^1.14.2"
+django-redis = "^5.4.0"
+drf-spectacular = "^0.27.0"
 pillow = "^10.2.0"
-coreapi = "^2.3.3"
-django-debug-toolbar = "^4.3.0"
-django-health-check = "^3.18.3"
+psycopg2-binary = "^2.9.9"
+redis = "^5.0.1"
+whitenoise = "^6.6.0"
+gunicorn = "^21.2.0"
+djangorestframework-simplejwt = "^5.3.1"
+drf-spectacular-sidecar = "^2025.3.1"
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.3.0"
+black = "^24.1.1"
 isort = "^5.13.2"
 flake8 = "^7.0.0"
-pytest = "^8.1.1"
+pytest = "^8.0.0"
 pytest-django = "^4.8.0"
 pytest-cov = "^4.1.0"
 factory-boy = "^3.3.0"
+faker = "^22.5.1"
+django-debug-toolbar = "^4.2.0"
 
 [build-system]
 requires = ["poetry-core"]

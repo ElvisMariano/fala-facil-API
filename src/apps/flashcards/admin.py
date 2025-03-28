@@ -17,7 +17,10 @@ class DeckAdmin(admin.ModelAdmin):
         'category',
         'is_public',
         'owner',
-        'flashcards_count',
+        'total_cards',
+        'due_cards',
+        'completion_rate',
+        'version',
         'created_at',
     ]
     list_filter = [
@@ -25,15 +28,26 @@ class DeckAdmin(admin.ModelAdmin):
         'level',
         'category',
         'is_public',
+        'is_featured',
+        'is_archived',
         'created_at',
     ]
     search_fields = [
         'name',
         'description',
         'owner__username',
+        'tags',
     ]
     ordering = ['-created_at']
     readonly_fields = [
+        'total_cards',
+        'mastered_cards',
+        'due_cards',
+        'average_mastery_time',
+        'study_count',
+        'favorite_count',
+        'share_count',
+        'completion_rate',
         'created_at',
         'updated_at',
     ]
@@ -47,6 +61,35 @@ class DeckAdmin(admin.ModelAdmin):
                 'category',
                 'is_public',
                 'owner',
+                'tags',
+            ],
+        }),
+        (_('Personalização'), {
+            'fields': [
+                'color',
+                'icon',
+            ],
+        }),
+        (_('Status'), {
+            'fields': [
+                'is_featured',
+                'is_archived',
+                'version',
+                'parent_deck',
+            ],
+        }),
+        (_('Estatísticas'), {
+            'fields': [
+                'total_cards',
+                'mastered_cards',
+                'due_cards',
+                'completion_rate',
+                'difficulty',
+                'average_mastery_time',
+                'study_count',
+                'favorite_count',
+                'share_count',
+                'last_studied_at',
             ],
         }),
         (_('Datas'), {

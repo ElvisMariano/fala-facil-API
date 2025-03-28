@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field
 from .models import Achievement, AchievementDefinition
 
 
@@ -24,7 +25,8 @@ class AchievementDefinitionSerializer(serializers.ModelSerializer):
                  'requirement_value', 'requirement_type', 'is_achieved')
         read_only_fields = ('id',)
 
-    def get_is_achieved(self, obj):
+    @extend_schema_field(serializers.BooleanField())
+    def get_is_achieved(self, obj: AchievementDefinition) -> bool:
         """
         Verifica se o usuário atual já alcançou esta conquista.
         """
