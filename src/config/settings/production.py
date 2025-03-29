@@ -3,6 +3,7 @@ Production settings.
 """
 
 import os
+import sys
 import logging
 import dj_database_url
 from .base import *  # noqa
@@ -88,6 +89,27 @@ LOGGING = {
 }
 
 # Database configuration for Railway
-DATABASES = {
-    'default': dj_database_url.config(default='sqlite:///db.sqlite3', conn_max_age=600)
-}
+# Verificar se DATABASE_URL está definido no ambiente
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+# Configuração do banco de dados com fallback mais robusto
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(conn_max_age=600)
+    }
+    # Garantir que o ENGINE está definido
+    if 'ENGINE' not in DATABASES['default']:
+        import sys
+        print("ERRO: DATABASE_URL não contém ENGINE válido", file=sys.stderr)
+        print(f"DATABASE_URL: {DATABASE_URL}", file=sys.stderr)
+        # Fallback para PostgreSQL
+        DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
+else:
+    # Fallback para SQLite se DATABASE_URL não estiver definido
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+    print("AVISO: Usando SQLite como fallback. DATABASE_URL não está definido.", file=sys.stderr)
