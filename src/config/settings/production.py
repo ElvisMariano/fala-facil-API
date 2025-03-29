@@ -4,6 +4,7 @@ Production settings.
 
 import os
 import logging
+import dj_database_url
 from .base import *  # noqa
 
 # Security settings
@@ -84,4 +85,9 @@ LOGGING = {
             'propagate': False,
         },
     },
-} 
+}
+
+# Database configuration for Railway
+DATABASES = {
+    'default': dj_database_url.config(default='sqlite:///db.sqlite3', conn_max_age=600)
+}
