@@ -54,6 +54,10 @@ except ImportError:
     print("AVISO: Módulo sentry_sdk não encontrado. O monitoramento de erros com Sentry está desativado.", file=sys.stderr)
 
 # Logging
+# Criar diretório de logs no diretório base do projeto
+LOGS_DIR = Path(BASE_DIR) / 'logs'
+LOGS_DIR.mkdir(exist_ok=True)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -68,19 +72,14 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': '/var/log/fala_facil/app.log',
-            'level': 'WARNING',
-        },
     },
     'root': {
-        'handlers': ['console', 'file'],
+        'handlers': ['console'],
         'level': 'INFO',
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': os.environ.get('DJANGO_LOG_LEVEL', 'INFO'),
             'propagate': False,
         },
