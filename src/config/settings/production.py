@@ -30,24 +30,28 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 
-# Sentry
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
-from sentry_sdk.integrations.logging import LoggingIntegration
+# Sentry - Configuração opcional
+try:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.logging import LoggingIntegration
 
-sentry_sdk.init(
-    dsn=os.environ.get('SENTRY_DSN'),
-    integrations=[
-        DjangoIntegration(),
-        LoggingIntegration(
-            level=logging.INFO,
-            event_level=logging.ERROR,
-        ),
-    ],
-    traces_sample_rate=float(os.environ.get('SENTRY_TRACES_SAMPLE_RATE', '0.1')),
-    send_default_pii=True,
-    environment=os.environ.get('ENVIRONMENT', 'production'),
-)
+    sentry_sdk.init(
+        dsn=os.environ.get('SENTRY_DSN'),
+        integrations=[
+            DjangoIntegration(),
+            LoggingIntegration(
+                level=logging.INFO,
+                event_level=logging.ERROR,
+            ),
+        ],
+        traces_sample_rate=float(os.environ.get('SENTRY_TRACES_SAMPLE_RATE', '0.1')),
+        send_default_pii=True,
+        environment=os.environ.get('ENVIRONMENT', 'production'),
+    )
+    print("Sentry inicializado com sucesso.", file=sys.stderr)
+except ImportError:
+    print("AVISO: Módulo sentry_sdk não encontrado. O monitoramento de erros com Sentry está desativado.", file=sys.stderr)
 
 # Logging
 LOGGING = {
