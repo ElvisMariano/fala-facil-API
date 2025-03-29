@@ -48,6 +48,7 @@ urlpatterns = [
     path('api/schema/', CustomSchemaAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    path('api/', include('core.urls')),  # Incluindo as URLs do core, que contém o endpoint de saúde
 ]
 
 # Debug toolbar
